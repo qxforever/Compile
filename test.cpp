@@ -57,11 +57,15 @@ void init(){
 }
 
 int main(){
+	freopen("1.in","r",stdin);
 	init();
-	getline(cin, s, '?');
-	s += ' ';
+	while(!cin.eof()){
+		string ss;
+		getline(cin, ss);
+		s += ss + '\n';
+	}
 
-	int len = s.size();
+	int len = s.length();
 
 	for (int i = 0; i < len; i++) {
 		if (isspace(s[i])) continue;
@@ -69,7 +73,7 @@ int main(){
 		int j = i;
 
 		if (isalpha(s[i])) {
-			
+
 			while (isalpha(s[j]) || isdigit(s[j])) {
 				tmp += s[j];
 				j++;
@@ -111,8 +115,10 @@ int main(){
 			cout << table["("] << '\n';
 		else if (isRParenthesis(s[i])) 
 			cout << table[")"] << '\n';
-		else 
-			exit(0);
+		else {
+			cout << "Unknown" << '\n';
+			fprintf(stderr, "Unknown\n");
+		}
 	}
 
 }
