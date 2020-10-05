@@ -115,7 +115,9 @@ int main(){
 		else if (isRParenthesis(s[i])) 
 			cout << table[")"] << '\n';
 		else {
-			cout << "Unknown" << '\n';		}
+			cout << "Unknown" << '\n';
+			exit(0);
+		}
 	}
 
 }
