@@ -57,7 +57,6 @@ void init(){
 }
 
 int main(){
-	freopen("1.in","r",stdin);
 	init();
 	while(!cin.eof()){
 		string ss;
