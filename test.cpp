@@ -1,123 +1,97 @@
-#include <bits/stdc++.h>
+#include <string>
+#include <iostream>
+#include <map>
+#include <stack>
 
 using std::string;
-using std::vector;
-using std::map;
 using std::cin;
 using std::cout;
+using std::map;
+using std::stack;
 
 string s;
+int cnt;
 
-map<string, string> table;
+map<char, int> f = map<char, int>{
+	{'+', 2}, {'*', 4}, {'(', 0}, {')', 6}, {'i', 6}, {'#', 0}
+};
 
-bool isEqu(char x){
-	return x == '=';
+map<char, int> g = map<char, int>{
+	{'+', 1}, {'*', 3}, {'(', 5}, {')', 0}, {'i', 5}, {'#', 0}
+};
+
+bool compare(const char & lhs, const char & rhs) {
+	return f[lhs]<=g[rhs];
 }
 
-bool isColon(char x){
-	return x == ':';
+bool isoperator(char c){
+	return c == '+' || c == '*';
 }
 
-bool isPlus(char x){
-	return x == '+';
+bool issym(char c){
+	return c == '+' || c == '*' || c == '(' || c == ')' || c == '#';
 }
 
-bool isStar(char x){
-	return x == '*';
+void push(stack<char> &s, char c){
+	if (c == '#') return ;
+	if (isoperator(c)) cnt++;
+	if (isoperator(c)|| c == 'i') s.push(c);
+	cout << "I" << c << '\n';
 }
 
-bool isComma(char x){
-	return x == ',';
+void RE(){
+	cout << "RE" << '\n';
+	exit(0);
 }
 
-bool isLParenthesis(char x){
-	return x == '(';
+void R(){
+	cout << "R" << '\n';
 }
 
-bool isRParenthesis(char x){
-	return x == ')';
+void E(){
+	cout << "E" << '\n';
+	exit(0);
 }
 
-void init(){
-	table = map<string, string> {
-		{"BEGIN", "Begin"},
-		{"END", "End"},
-		{"FOR", "For"},
-		{"IF", "If"},
-		{"THEN", "Then"},
-		{"ELSE", "Else"},
-		{":", "Colon"},
-		{"+", "Plus"},
-		{"*", "Star"},
-		{",", "Comma"},
-		{"(", "LParenthesis"},
-		{")", "RParenthesis"},
-		{":=", "Assign"}
-	};
-}
+int main() {
+	cin >> s;
+	s += '#';
+	stack<char> a, b;
+	b.push('#');
+	int n = s.length();
 
-int main(){
-	init();
-	while(!cin.eof()){
-		string ss;
-		getline(cin, ss);
-		s += ss + '\n';
-	}
-
-	int len = s.length();
-
-	for (int i = 0; i < len; i++) {
-		if (isspace(s[i])) continue;
-		string tmp = "";
-		int j = i;
-
-		if (isalpha(s[i])) {
-
-			while (isalpha(s[j]) || isdigit(s[j])) {
-				tmp += s[j];
-				j++;
-			}
-
-			if (table.count(tmp)) {
-				cout << table[tmp] << '\n';
+	for (int i = 0; i < n; i++) {
+		if (issym(s[i])) {
+			if (compare(b.top(), s[i])) {
+				push(b, s[i]);
 			}
 			else {
-				cout << "Ident(" << tmp << ')' << '\n';
-			}
-			i = j - 1;
-		}
-		else if (isdigit(s[i])) {
-			while (isdigit(s[j])) {
-				tmp += s[j];
-				j++;
-			}
-			int res = stoi(tmp);
-			cout << "Int(" << res << ')' << '\n';
-			i = j - 1;
-		}
-		else if (isColon(s[i])) {
-			if (isEqu(s[i + 1])) {
-				cout << table[":="] << '\n';
-				i = i + 1;
-			}
-			else {
-				cout << table[":"] << '\n';
+				while (!compare(b.top(), s[i])) {
+					if (isoperator(b.top())) {
+						if (a.size() < 2){
+							RE();
+						}
+						a.pop();
+						cnt--;
+					}
+					else {
+						if (a.size() < 1) {
+							RE();
+						}
+						a.pop();
+					}
+					b.pop();
+					R();
+				}
+				push(b, s[i]);
 			}
 		}
-		else if (isPlus(s[i])) 
-			cout << table["+"] << '\n';
-		else if (isStar(s[i])) 
-			cout << table["*"] << '\n';
-		else if (isComma(s[i])) 
-			cout << table[","] << '\n';
-		else if (isLParenthesis(s[i])) 
-			cout << table["("] << '\n';
-		else if (isRParenthesis(s[i])) 
-			cout << table[")"] << '\n';
-		else {
-			cout << "Unknown" << '\n';
-			exit(0);
+		else if (s[i] == 'i') {
+			if (a.size() > cnt) E();
+			push(a, s[i]);
+			if(issym(s[i + 1])) R();
 		}
+		else E();
 	}
-
+	if(!(b.size() == 1 && a.size() == 1)) RE();
 }
