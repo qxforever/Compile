@@ -75,7 +75,8 @@ int main() {
 					// printf ("cmp : %c %c\n",b.top(), s[i]);
 					if (f[b.top()] == g[s[i]]){
 						b.pop();
-						R();
+						if (s[i] == ')')
+							R();
 						break;
 					}
 					if (isoperator(b.top())) {
