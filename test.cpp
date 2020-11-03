@@ -21,7 +21,7 @@ map<char, int> g = map<char, int>{
 };
 
 bool compare(const char & lhs, const char & rhs) {
-	return f[lhs]<=g[rhs];
+	return f[lhs]<g[rhs];
 }
 
 bool isoperator(char c){
@@ -35,7 +35,7 @@ bool issym(char c){
 void push(stack<char> &s, char c){
 	if (c == '#') return ;
 	if (isoperator(c)) cnt++;
-	if (isoperator(c)|| c == 'i') s.push(c);
+	if (isoperator(c) || c == '(' || c == 'i') s.push(c);
 	cout << "I" << c << '\n';
 }
 
@@ -53,6 +53,10 @@ void E(){
 	exit(0);
 }
 
+void printstk(const stack<char> s){
+	// cout << "top" << s.top() << '\n';
+}
+
 int main() {
 	cin >> s;
 	s += '#';
@@ -61,12 +65,18 @@ int main() {
 	int n = s.length();
 
 	for (int i = 0; i < n; i++) {
+		printstk(b);
 		if (issym(s[i])) {
 			if (compare(b.top(), s[i])) {
 				push(b, s[i]);
 			}
 			else {
 				while (!compare(b.top(), s[i])) {
+					// printf ("cmp : %c %c\n",b.top(), s[i]);
+					if (f[b.top()] == g[s[i]]){
+						b.pop();
+						break;
+					}
 					if (isoperator(b.top())) {
 						if (a.size() < 2){
 							RE();
@@ -93,5 +103,6 @@ int main() {
 		}
 		else E();
 	}
-	if(!(b.size() == 1 && a.size() == 1)) RE();
+	// cout << a.size() << " " << b.size() << '\n';
+	if(!(b.size() == 0 && a.size() == 1)) RE();
 }
