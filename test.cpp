@@ -29,7 +29,6 @@ void E(){
 	exit(0);
 }
 
-
 struct stack{
 	char st[100010];
 	int size = 0;
@@ -56,7 +55,6 @@ struct stack{
 
 	void work(){
 		char c = topterminal();
-		// cout << "top: " << c << '\n';
 		if (c == '+' || c == '*') {
 			if (size > 3 && st[size - 1] == 'N' && st[size - 3] == 'N' && st[size - 2] == c) {
 				R();
@@ -89,7 +87,6 @@ int main(){
 	a[0] = '#'; a.size++;
 	for (int i = 0; i < s.length(); i++) {
 		if (s[i] == 'i' && (a[a.size - 1] == 'i' || a[a.size - 1] == 'N')) E();
-		// cout << s[i] << '\n';
 		while (!(a < s[i])) {
 			a.work();
 		}
