@@ -1,42 +1,20 @@
 #include <string>
 #include <iostream>
 #include <map>
-#include <stack>
 
 using std::string;
 using std::cin;
 using std::cout;
 using std::map;
-using std::stack;
-
-string s;
-int cnt;
 
 map<char, int> f = map<char, int>{
-	{'+', 2}, {'*', 4}, {'(', 0}, {')', 6}, {'i', 6}, {'#', 0}, {'N', -1}
+	{'+', 2}, {'*', 4}, {'(', 0}, {')', 6}, {'i', 6}, {'#', -1}
 };
 
 map<char, int> g = map<char, int>{
-	{'+', 2}, {'*', 3}, {'(', 5}, {')', 0}, {'i', 5}, {'#', 0}
+	{'+', 2}, {'*', 3}, {'(', 5}, {')', 1}, {'i', 5}, {'#', 0}
 };
 
-bool compare(const char &lhs, const char &rhs) {
-	return f[lhs]<g[rhs];
-}
-
-bool canComp(const char &lhs, const char &rhs) {
-	return !(lhs == rhs);
-}
-
-bool issym(char c){
-	return c == '+' || c == '*' || c == '(' || c == ')' || c == '#' || c == 'i';
-}
-
-void push(stack<char> &s, char c){
-	if (c == '#') return ;
-	s.push(c);
-	cout << "I" << c << '\n';
-}
 
 void RE(){
 	cout << "RE" << '\n';
@@ -52,56 +30,71 @@ void E(){
 	exit(0);
 }
 
-void work(stack<char> &s){
-	if (s.top() == ')'){
-		if (s.size() < 4) RE();
-		char ch[3];
-		for (int i = 0; i < 3; i++){
-			ch[i] = s.top();
-			s.pop(); 
-		}
-		if (!(ch[0] == ')') && ch[1] == 'N' && ch[2] == '(') RE();
-		s.push('N');
-		R();
-		return ;
-	}
-	if (s.top() != 'N' && s.top() != 'i') RE();
-	if (s.top() == 'i'){
-		s.pop();
-		s.push('N');
-		R();
-		return ;
-	}
-	else {
-		if (s.size() < 4) RE();
-		char ch[3];
-		for (int i = 0; i < 3; i++){
-			ch[i] = s.top();
-			s.pop(); 
-		}
-		if (!(ch[0] == 'N') && (ch[1] == '+' || ch[1] == '*') && ch[2] == 'N') RE();
-		R();
-		s.push('N');
-		return ;
-	}
-}
 
-int main() {
+struct stack{
+	char st[100010];
+	int size = 0;
+	
+	void pop() {size--;}
+
+	void push(char c){
+		st[size++]=c;
+		cout << 'I' << c << '\n';
+	}
+
+	char& operator [](int idx){
+		return st[idx];
+	}
+
+	char topterminal() const {
+		for (int i = size - 1; ~i; i--) if (st[i] != 'N') return st[i];
+	}
+
+	bool operator < (const char &rhs) const {
+		if (!g.count(rhs)) E();
+		return f[topterminal()] < g[rhs];
+	}
+
+	void work(){
+		char c = topterminal();
+		// cout << "top: " << c << '\n';
+		if (c == '+' || c == '*') {
+			if (size > 3 && st[size - 1] == 'N' && st[size - 3] == 'N' && st[size - 2] == c) {
+				R();
+				size -= 2;
+			}
+			else RE();
+		}
+		else if (c == ')') {
+			if (size > 3 && st[size - 1] == ')' && st[size - 2] == 'N' && st[size - 3] == '(') {
+				R();
+				size -= 2;
+				st[size - 1] = 'N';
+			}
+		}
+		else if (c == 'i') {
+			st[size - 1] = 'N';
+			R();
+			return ;
+		}
+	}
+};
+
+string s;
+
+int main(){
 	cin >> s;
 	s += '#';
-	stack<char> a;
-	a.push('#');
-	for (size_t i = 0; i < s.length(); i++) {
-		if(!issym(s[i]) || !canComp(a.top(), s[i])) E();
-
-		while(!compare(a.top(), s[i])){
-			// printf("%c %c %d\n", a.top(), s[i], compare(a.top(), s[i]));
-			work(a);
+	stack a;
+	a[0] = '#'; a.size++;
+	for (int i = 0; i < s.length(); i++) {
+		if (s[i] == 'i' && (a[a.size - 1] == 'i' || a[a.size - 1] == 'N')) E();
+		// cout << s[i] << '\n';
+		while (!(a < s[i])) {
+			a.work();
 		}
-		
-		if (compare(a.top(), s[i])) {
-			push(a, s[i]);
+		if (a < s[i] && s[i] != '#') {
+			a.push(s[i]);
 		}
 	}
-	while (a.size() > 2) work(a);
 }
