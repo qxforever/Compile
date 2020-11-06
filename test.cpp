@@ -15,7 +15,6 @@ map<char, int> g = map<char, int>{
 	{'+', 2}, {'*', 3}, {'(', 5}, {')', 1}, {'i', 5}, {'#', 0}
 };
 
-
 void RE(){
 	cout << "RE" << '\n';
 	exit(0);
@@ -77,6 +76,7 @@ struct stack{
 			R();
 			return ;
 		}
+		else E();
 	}
 };
 
